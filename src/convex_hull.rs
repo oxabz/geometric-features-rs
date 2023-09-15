@@ -6,7 +6,6 @@ use std::cmp::Ordering;
 
 use crate::{area, perimeter, utils, Point, Polygon, PolygonOwned};
 
-
 fn convex_hull(polygon: Polygon) -> PolygonOwned {
     let mut convex_hull = Vec::with_capacity(polygon.len()); // The convex hull is at most the size of the polygon
     let mut polygon = polygon.to_vec(); // We need to sort the polygon, so we need to own it
@@ -100,7 +99,6 @@ pub fn convex_deviation(polygon: Polygon) -> f64 {
     let area = area(&convex_hull);
     (convex_area - area) / area
 }
-
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct ConvexHullFeatures {

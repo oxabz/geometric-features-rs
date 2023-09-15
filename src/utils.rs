@@ -1,6 +1,6 @@
 use crate::Polygon;
 
-pub(crate) mod transform{
+pub(crate) mod transform {
     use crate::{Polygon, PolygonOwned};
 
     pub(crate) fn rotate(polygon: Polygon, angle: f64) -> PolygonOwned {
@@ -14,14 +14,14 @@ pub(crate) mod transform{
             })
             .collect::<Vec<_>>()
     }
-    
+
     pub(crate) fn translate(polygon: Polygon, x: f64, y: f64) -> PolygonOwned {
         polygon
             .iter()
             .map(|&(x0, y0)| (x0 + x, y0 + y))
             .collect::<Vec<_>>()
     }
-    
+
     pub(crate) fn scale(polygon: Polygon, x: f64, y: f64) -> PolygonOwned {
         polygon
             .iter()
@@ -29,7 +29,6 @@ pub(crate) mod transform{
             .collect::<Vec<_>>()
     }
 }
-
 
 pub(crate) fn find_horizontal_intersect(polygon: Polygon, y: f64) -> Vec<f64> {
     let mut intersections = Vec::new();
