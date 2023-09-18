@@ -117,7 +117,6 @@ Compute the features of the convex hull of a polygon
  */
 pub fn convex_hull_features(polygon: Polygon) -> ConvexHullFeatures {
     let convex_hull = convex_hull(polygon);
-    println!("{:?}", convex_hull);
     let convex_area = area(&convex_hull);
     let area = area(&convex_hull);
     ConvexHullFeatures {
