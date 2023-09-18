@@ -29,7 +29,7 @@ fn convex_hull(polygon: Polygon) -> PolygonOwned {
     // compute the angle between the bottom point and the other points
     let angle = |pi: (Point, Point)| -> (Point, f64, f64) {
         let length = (pi.1 .0.powi(2) + pi.1 .1.powi(2)).sqrt();
-        let cos = pi.1 .0 / length;
+        let cos = - pi.1 .0 / length;
 
         (pi.0, cos, length)
     };
