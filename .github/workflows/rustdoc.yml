@@ -34,7 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Building Doc
-        run: cargo doc
+        run: cargo doc --all-features
       - name: Adding index
         run: | 
           touch ./target/doc/index.html
