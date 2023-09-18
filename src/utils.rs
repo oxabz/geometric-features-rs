@@ -1,5 +1,6 @@
 use crate::Polygon;
 
+#[cfg(feature = "ellipses")]
 pub(crate) mod transform {
     use crate::{Polygon, PolygonOwned};
 
@@ -30,6 +31,7 @@ pub(crate) mod transform {
     }
 }
 
+#[cfg(feature = "ellipses")]
 pub(crate) fn find_horizontal_intersect(polygon: Polygon, y: f64) -> Vec<f64> {
     let mut intersections = Vec::new();
     for i in 0..polygon.len() {

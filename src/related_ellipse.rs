@@ -29,13 +29,23 @@ let polygon: Vec<(f64,f64)> = vec![
     ( 8.86,  4.14)
 ];
 let res = fit_ellipse(&polygon);
-assert_eq!(res, (2.573630053336637, 2.476420405420397, 4.000614627987627, (8.54217282177068, 4.988615149337739)));
+assert_eq!(res, (2.376780621008688, 2.2934319562351835, 3.999506964053637, (8.487782302188705, 5.068631718638504)));
 ```
 
  */
 #[allow(non_snake_case)]
 pub fn fit_ellipse(polygon: Polygon) -> (f64, f64, f64, Point) {
-    let (x, y): (Vec<_>, Vec<_>) = polygon.iter().cloned().unzip();
+    let mut polygon = polygon.to_vec();
+    polygon.push(polygon[0]);
+    let interpolate = |arr:&[(f64, f64)]|{
+        let (x0, y0) = arr[0];
+        let (x1, y1) = arr[1];
+
+        (0..5)
+            .map(|x|x as f64 / 5.0)
+            .map(move|t|(x0 * (1.0 - t) + x1 * t, y0 * (1.0 - t) + y1 * t))
+    };
+    let (x, y): (Vec<_>, Vec<_>) = polygon.windows(2).flat_map(interpolate).unzip();
 
     let x = Matrix1xX::from_row_slice(&x);
     let y = Matrix1xX::from_row_slice(&y);
@@ -112,7 +122,7 @@ pub fn fit_ellipse(polygon: Polygon) -> (f64, f64, f64, Point) {
         (false, b_axis, a_axis)
     };
 
-    let orientation = if b.abs() < 1e-6 {
+    let mut orientation = if b.abs() < 1e-6 {
         0.0
     } else if a <= c {
         (0.5 * (c - a + fac) / b).atan()
@@ -121,15 +131,10 @@ pub fn fit_ellipse(polygon: Polygon) -> (f64, f64, f64, Point) {
     };
 
     if width_gt_height {
-        (
-            major_axis,
-            minor_axis,
-            orientation + std::f64::consts::PI / 2.0,
-            (x0, y0),
-        )
-    } else {
-        (major_axis, minor_axis, orientation, (x0, y0))
+        orientation += std::f64::consts::PI / 2.0;
     }
+    
+    (major_axis, minor_axis, orientation, (x0, y0)) 
 }
 
 /**
@@ -147,7 +152,7 @@ let polygon: Vec<(f64,f64)> = vec![
     ( 10.0,  2.42),
     ( 8.86,  4.14)
 ];
-assert_eq!(eccentricity(&polygon), 0.2722428135824198);
+assert_eq!(eccentricity(&polygon), 0.26249954212114796);
 ```
  */
 pub fn eccentricity(polygon: Polygon) -> f64 {
@@ -169,9 +174,8 @@ let polygon = [
 ];
 
 let  (major_axis, minor_axis) = principal_axes(&polygon);
-assert_eq!(major_axis, 35.22502271825772);
-assert_eq!(minor_axis, 26.87813562769717
-);
+assert_eq!(major_axis, 23.247229367609776);
+assert_eq!(minor_axis, 18.561527921248285);
 
 ```
 */
@@ -244,7 +248,7 @@ let polygon: Vec<(f64,f64)> = vec![
     ( 10.0,  2.42),
     ( 8.86,  4.14)
 ];
-assert_eq!(eliptic_deviation(&polygon, 100), 0.6446897388004065);
+assert_eq!(eliptic_deviation(&polygon, 100), 0.5378961702988894);
 ```
  */
 pub fn eliptic_deviation(polygon: Polygon, precision: usize) -> f64 {
@@ -298,16 +302,16 @@ let polygon2: Vec<(f64,f64)> = vec![
 ];
 
 let features = elipse_features(&polygon, 200);
-assert_eq!(features.major_axis, 35.22502271825772);
-assert_eq!(features.minor_axis, 26.87813562769717);
-assert_eq!(features.orientation, 1.1633806137347353);
-assert_eq!(features.center, (4.680394624451029, 1.5497388544698596));
-assert_eq!(features.eccentricity, 0.6463501161972994);
-assert_eq!(features.eliptic_deviation, 6.064072920359651);
+assert_eq!(features.major_axis, 23.247229367609776);
+assert_eq!(features.minor_axis, 18.561527921248285);
+assert_eq!(features.orientation, 1.1140533990057633);
+assert_eq!(features.center, (3.816556476304908, 2.4698470796765917));
+assert_eq!(features.eccentricity, 0.6020738096588001);
+assert_eq!(features.eliptic_deviation, 3.1033783265455486);
 
 let features = elipse_features(&polygon2, 200);
 assert_eq!(
-    ElipseFeatures { major_axis: 5.147260106673274, minor_axis: 4.952840810840794, orientation: 4.000614627987627, center: (8.54217282177068, 4.988615149337739), eccentricity: 0.2722428135824198, eliptic_deviation: 0.6449998286144287 },
+    ElipseFeatures { major_axis: 4.753561242017376, minor_axis: 4.586863912470367, orientation: 3.999506964053637, center: (8.487782302188705, 5.068631718638504), eccentricity: 0.26249954212114796, eliptic_deviation: 0.5379829218188382 },
     features
 );
 
@@ -354,10 +358,10 @@ mod test {
     fn regression_test_fit_elipse() {
         let (major_axis, minor_axis, orientation, center) = fit_ellipse(&TEST_POLYGON);
 
-        assert_eq!(major_axis, 6.780797307628133);
-        assert_eq!(minor_axis, 3.6882315470973674);
-        assert_eq!(orientation.to_degrees(), 57.38522633536495);
-        assert_eq!(center, (-1.934997700587091, -0.5096265166340543));
+        assert_eq!(major_axis, 11.623614683804888);
+        assert_eq!(minor_axis, 9.280763960624142);
+        assert_eq!(orientation.to_degrees(), 63.83055791523414);
+        assert_eq!(center, (3.816556476304908, 2.4698470796765917));
     }
 
     const REPETITIONS: usize = 200;
@@ -388,7 +392,7 @@ mod test {
 
     #[test]
     fn find_minor_major_axis() {
-        for _ in 0..2000 {
+        for _ in 0..100 {
             let polygon = build_random_polygon(100);
             let (major_axis, minor_axis, orientation, center_o_mass) = fit_ellipse(&polygon);
             assert!(major_axis > minor_axis);

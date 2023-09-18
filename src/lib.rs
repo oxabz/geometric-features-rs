@@ -2,6 +2,7 @@
 Rust Library Dedicated to compute features of an object based on it's polygon coordinates
 */
 pub mod convex_hull;
+#[cfg(feature = "ellipses")]
 pub mod related_ellipse;
 mod utils;
 use std::f64::consts;
