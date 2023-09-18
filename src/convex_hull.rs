@@ -6,6 +6,11 @@ use std::cmp::Ordering;
 
 use crate::{area, perimeter, utils, Point, Polygon, PolygonOwned};
 
+/**
+Compute the convex hull of a polygon
+
+The convex hull is the smallest convex polygon that contains all the points of the polygon
+*/
 fn convex_hull(polygon: Polygon) -> PolygonOwned {
     let mut convex_hull = Vec::with_capacity(polygon.len()); // The convex hull is at most the size of the polygon
     let mut polygon = polygon.to_vec(); // We need to sort the polygon, so we need to own it
@@ -112,6 +117,7 @@ Compute the features of the convex hull of a polygon
  */
 pub fn convex_hull_features(polygon: Polygon) -> ConvexHullFeatures {
     let convex_hull = convex_hull(polygon);
+    println!("{:?}", convex_hull);
     let convex_area = area(&convex_hull);
     let area = area(&convex_hull);
     ConvexHullFeatures {
