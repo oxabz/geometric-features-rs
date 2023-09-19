@@ -94,5 +94,5 @@ assert_eq!(compacity(&polygon), 0.10132118364233779);
 ```
  */
 pub fn compacity(polygon: Polygon) -> f64 {
-    area(polygon) / (equivalent_perimeter(polygon).powi(2) / 4.0 * consts::PI)
+    area(polygon) / (perimeter(polygon).powi(2) / 4.0 * consts::PI)
 }
